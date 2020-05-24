@@ -1,0 +1,22 @@
+version: "2"
+
+services:
+    opencv_python:
+        build:
+            args:
+                - username=${USER}
+                - uid=${UID}
+            context: .
+            dockerfile: opencv_base.Dockerfile
+        container_name: ocv-data-augmentation
+        image: ocv-data-augmentation
+        environment: 
+            DISPLAY: $DISPLAY
+            QT_X11_NO_MITSHM: 1
+        volumes: 
+            - "../project:/home/&{USER}/data_augmentation/" # Host : Container
+            - "/tmp/.X11-unix:/tmp/.X11-unix"
+        tty: true
+
+# Para entrar no container => docker exec -it ocv-data-augmentation bash
+# docker-compose config => Para visualizar a configuração do container
