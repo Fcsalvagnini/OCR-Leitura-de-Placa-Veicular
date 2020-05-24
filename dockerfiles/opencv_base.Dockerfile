@@ -12,6 +12,7 @@ ENV PROJECT_DIR $HOME/data_augmentation
 # Atualiza os pacotes e instala python e as dependências do opencv
 RUN apt-get update && apt-get install -y python3-dev libglib2.0-0 libsm6 libxext6 libfontconfig1 libxrender1 nano curl \ 
         && rm -rf /var/lib/apt/lists/*
+
 # Create a non-root user
 RUN adduser --disabled-password \
         --gecos "Non-root user" \

@@ -14,7 +14,7 @@ services:
             DISPLAY: $DISPLAY
             QT_X11_NO_MITSHM: 1
         volumes: 
-            - "../project:/home/&{USER}/data_augmentation/" # Host : Container
+            - "../project:/home/${USER}/data_augmentation/" # Host : Container
             - "/tmp/.X11-unix:/tmp/.X11-unix"
         tty: true
 

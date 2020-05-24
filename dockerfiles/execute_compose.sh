@@ -1,4 +1,4 @@
 #!/bin/zsh
 set -a
 source .env
-docker-compose up
+docker-compose up -d
