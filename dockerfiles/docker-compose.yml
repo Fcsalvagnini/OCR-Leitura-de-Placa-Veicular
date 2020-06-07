@@ -4,8 +4,8 @@ services:
     opencv_python:
         build:
             args:
-                - username=${USER}
-                - uid=${UID}
+                - username=${user}
+                - uid=${uid}
             context: .
             dockerfile: opencv_base.Dockerfile
         container_name: ocv-data-augmentation
@@ -18,5 +18,8 @@ services:
             - "/tmp/.X11-unix:/tmp/.X11-unix"
         tty: true
 
-# Para entrar no container => docker exec -it ocv-data-augmentation bash
-# docker-compose config => Para visualizar a configuração do container
+# Para entrar no container => docker exec -it ocv-data-augmentation bash, ou caso utilize o vs code 
+# é possível utilizar a extesão para server remoto com containers (Remote-Containers)"""
+
+# docker-compose config => Para visualizar a configuração do container, 
+

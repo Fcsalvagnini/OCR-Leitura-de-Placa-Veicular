@@ -9,7 +9,7 @@ def segments_image_characters(img, img_name, padding):
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     _, img_bin = cv2.threshold(img_gray, 110, 255, cv2.THRESH_BINARY_INV)
 
-    # Detecta a posição dos caracteres na imagem e as ordena em ordem crescente (No eixo x)
+    # Detecta a posição dos caracteres na imagem e as ordena em ordem crescente (Posição no eixo x)
     contours, _ = cv2.findContours(img_bin, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     bounding_boxes = np.array([list(cv2.boundingRect(contour)) for contour in contours])
     bounding_boxes = bounding_boxes[np.argsort(bounding_boxes[:, 0])] 
@@ -29,7 +29,7 @@ def segments_image_characters(img, img_name, padding):
 
 def get_imgs_path(path):
     imgs = os.listdir(path)
-    imgs_path = [path + img for img in imgs]
+    imgs_path = [os.path.join(path, img) for img in imgs]
     return imgs_path
 
 
@@ -41,8 +41,9 @@ def process_imgs(imgs_path, hdf5_file):
         characters, labels = segments_image_characters(img, img_name, padding = 4)
 
 
+PATH = "data/trdg_output/"
+
 if __name__ == "__main__":
-    PATH = "data/trdg_output/"
     imgs_path = get_imgs_path(PATH)
     
     process_imgs(imgs_path, None)
