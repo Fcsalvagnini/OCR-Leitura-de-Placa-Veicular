@@ -2,6 +2,19 @@ import cv2
 import os
 import numpy as np
 from tqdm import tqdm
+import re
+
+def get_characters_labels(img_name):
+    characters_labels = []
+    img_labels = img_name.split("_")[0]
+    for label in img_labels:
+        if label.isdigit():
+            characters_labels.append(int(label))
+        elif label.isalpha:
+            characters_labels.append(label)
+
+    return characters_labels
+    
 
 def segments_image_characters(img, img_name, padding):
     characters = []
@@ -22,7 +35,7 @@ def segments_image_characters(img, img_name, padding):
         characters.append(roi_character)
 
     # Gera as labels dos caracteres extraídos
-    labels = list(img_name.split("_")[0])
+    labels = get_characters_labels(img_name)
 
     return characters, labels
 
