@@ -3,18 +3,48 @@ import os
 import numpy as np
 from tqdm import tqdm
 import re
+import h5py
 
-def get_characters_labels(img_name):
-    characters_labels = []
-    img_labels = img_name.split("_")[0]
-    for label in img_labels:
-        if label.isdigit():
-            characters_labels.append(int(label))
-        elif label.isalpha:
-            characters_labels.append(label)
+class H5pyAcess:
+    def __init__(self, path_to_save, buffer_size):
+        self.db_acess = h5py.File(path_to_save, 'w')
+        self.characters = self.db_acess.create_dataset("characters_images", (119705, 100, 100, 3), dtype = np.uint8)
+        data_type_str = h5py.special_dtype(vlen = str)
+        self.labels = self.db_acess.create_dataset("labels", (119705, ), dtype = data_type_str)
 
-    return characters_labels
-    
+        # Cria o buffer de dados e o ponteiro para escrever no dataset
+        self.buffer_size = buffer_size
+        self.buffer = {"characters" : [], "labels" : []}
+        self.cursor_to_write = 0
+
+    def add_data(self, characters, labels):
+        self.buffer["characters"].extend(characters)
+        self.buffer["labels"].extend(labels)
+        
+        if len(self.buffer["characters"]) >= self.buffer_size:
+            self.writes_to_disk()
+
+    def writes_to_disk(self):
+        end_cursor = self.cursor_to_write + len(self.buffer["characters"])
+        self.characters[self.cursor_to_write : end_cursor] = self.buffer["characters"]
+        self.labels[self.cursor_to_write : end_cursor] = self.buffer["labels"]
+        
+        self.cursor_to_write = end_cursor
+        self.buffer = {"characters" : [], "labels" : []}
+
+    def end_connection(self):
+        self.db_acess.close()
+        
+def add_border(image, target_size, color, border_type = cv2.BORDER_CONSTANT):
+    height, width = image.shape[:2]
+    horizontal_border = target_size[0] - width
+    vertical_border = target_size[1] - height
+    top_size = int(vertical_border / 2) + ( vertical_border % 2 )
+    bottom_size = int(vertical_border / 2)
+    left_size = int(horizontal_border / 2) + ( horizontal_border % 2 )
+    right_size = int(horizontal_border / 2)
+    return cv2.copyMakeBorder(image, top = top_size, bottom = bottom_size, left = left_size, right = right_size,
+                                 borderType = border_type, value = color)
 
 def segments_image_characters(img, img_name, padding):
     characters = []
@@ -32,10 +62,11 @@ def segments_image_characters(img, img_name, padding):
         (xi, yi) = bbox[0] - padding, bbox[1] - padding
         (xf, yf) = xi + bbox[2] + 2*padding, yi + bbox[3] + 2*padding
         roi_character = img[yi : yf, xi : xf]
-        characters.append(roi_character)
+        roi_character = add_border(roi_character, (100, 100), (255, 255, 255))
+        characters.append(roi_character)        
 
     # Gera as labels dos caracteres extraídos
-    labels = get_characters_labels(img_name)
+    labels = list(img_name.split("_")[0])
 
     return characters, labels
 
@@ -46,18 +77,29 @@ def get_imgs_path(path):
     return imgs_path
 
 
-def process_imgs(imgs_path, hdf5_file):
+def process_imgs_and_save(imgs_path, hdf5_file):
     print("[INFO] Processing images")
+    number_of_examples = 0
     for img_path in tqdm(imgs_path):
         img = cv2.imread(img_path)
         img_name = img_path.split("/")[-1]
         characters, labels = segments_image_characters(img, img_name, padding = 4)
+        number_of_examples += len(labels)
+
+        hdf5_file.add_data(characters, labels)
+
+    print("[INFO] The number of examples characters is => ", number_of_examples)
 
 
 PATH = "data/trdg_output/"
 
 if __name__ == "__main__":
     imgs_path = get_imgs_path(PATH)
+    hdf5_acess = H5pyAcess("characters_dataset.hdf5", buffer_size = 1000)
     
-    process_imgs(imgs_path, None)
+    process_imgs_and_save(imgs_path, hdf5_acess)
+    
+    hdf5_acess.end_connection()
+    print("[INFO] Characters segmented and exported to hdf5")
+
 
