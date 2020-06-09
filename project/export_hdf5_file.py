@@ -8,7 +8,7 @@ import h5py
 class H5pyAcess:
     def __init__(self, path_to_save, buffer_size):
         self.db_acess = h5py.File(path_to_save, 'w')
-        self.characters = self.db_acess.create_dataset("characters_images", (119705, 100, 100, 3), dtype = np.uint8)
+        self.characters = self.db_acess.create_dataset("characters_images", (119705, 80, 55, 3), dtype = np.uint8)
         data_type_str = h5py.special_dtype(vlen = str)
         self.labels = self.db_acess.create_dataset("labels", (119705, ), dtype = data_type_str)
 
@@ -36,6 +36,16 @@ class H5pyAcess:
         self.db_acess.close()
         
 def add_border(image, target_size, color, border_type = cv2.BORDER_CONSTANT):
+    '''
+        Retorna a imagem com borda adicionada
+        Parametros:
+            - image (np array): Imagem a qual será adicionada a borda
+            - target_size (Tupla): Tamanho da imagem após a adição da borda
+            - color (Tupla): Tupla no esquema (B, G, R) indicando a cor da borda
+            - border_type (Constante cv2): Tipo da borda
+        Retorna:
+            - image (np array): Imagem com a borda adicionada
+    '''
     height, width = image.shape[:2]
     horizontal_border = target_size[0] - width
     vertical_border = target_size[1] - height
@@ -62,7 +72,8 @@ def segments_image_characters(img, img_name, padding):
         (xi, yi) = bbox[0] - padding, bbox[1] - padding
         (xf, yf) = xi + bbox[2] + 2*padding, yi + bbox[3] + 2*padding
         roi_character = img[yi : yf, xi : xf]
-        roi_character = add_border(roi_character, (100, 100), (255, 255, 255))
+        
+        roi_character = add_border(roi_character, (55, 80), (255, 255, 255))
         characters.append(roi_character)        
 
     # Gera as labels dos caracteres extraídos
