@@ -6,4 +6,4 @@ opencv-python==4.2.0.34
 pandas==1.0.3
 pillow==7.1.2
 tqdm==4.46.0
-Augmentor==0.2.8
+albumentations==0.4.5
