@@ -33,6 +33,8 @@ class H5pyAcess:
         self.buffer = {"characters" : [], "labels" : []}
 
     def end_connection(self):
+        if len(self.buffer["characters"]) > 0:
+            self.writes_to_disk()
         self.db_acess.close()
         
 def add_border(image, target_size, color, border_type = cv2.BORDER_CONSTANT):
