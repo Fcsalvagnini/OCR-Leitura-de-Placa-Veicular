@@ -6,11 +6,11 @@ import re
 import h5py
 
 class H5pyAcess:
-    def __init__(self, path_to_save, buffer_size):
+    def __init__(self, path_to_save, buffer_size, data_shape):
         self.db_acess = h5py.File(path_to_save, 'w')
-        self.characters = self.db_acess.create_dataset("characters_images", (119705, 80, 55, 3), dtype = np.uint8)
+        self.characters = self.db_acess.create_dataset("characters_images", data_shape, dtype = np.uint8)
         data_type_str = h5py.special_dtype(vlen = str)
-        self.labels = self.db_acess.create_dataset("labels", (119705, ), dtype = data_type_str)
+        self.labels = self.db_acess.create_dataset("labels", (data_shape[0], ), dtype = data_type_str)
 
         # Cria o buffer de dados e o ponteiro para escrever no dataset
         self.buffer_size = buffer_size
@@ -108,7 +108,7 @@ PATH = "data/trdg_output/"
 
 if __name__ == "__main__":
     imgs_path = get_imgs_path(PATH)
-    hdf5_acess = H5pyAcess("characters_dataset.hdf5", buffer_size = 1000)
+    hdf5_acess = H5pyAcess("characters_dataset.hdf5", buffer_size = 1000, data_shape = (119705, 80, 55, 3))
     
     process_imgs_and_save(imgs_path, hdf5_acess)
     
