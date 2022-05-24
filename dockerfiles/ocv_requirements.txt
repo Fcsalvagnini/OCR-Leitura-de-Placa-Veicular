@@ -4,4 +4,4 @@ tqdm==4.46.0
 albumentations==0.4.5
 opencv-python==4.2.0.34
 opencv-contrib-python==4.2.0.34
-tensorflow==2.2.0
+tensorflow==2.6.4
