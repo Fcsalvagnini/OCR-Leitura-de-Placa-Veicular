@@ -1,5 +1,5 @@
 h5py==2.10.0
-numpy==1.18.4
+numpy==1.22.0
 tqdm==4.46.0
 albumentations==0.4.5
 opencv-python==4.2.0.34
